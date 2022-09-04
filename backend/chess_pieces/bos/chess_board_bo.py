@@ -21,8 +21,3 @@ class ChessBoardBO:
     def get_all() -> List[ChessBoardBean]:
         chess_boards = ChessBoard.objects.all()
         return [ChessBoardBean.from_model(chess_board) for chess_board in chess_boards]
-
-    @staticmethod
-    def get_matrix(primary_key: int) -> property:
-        chess_board = ChessBoard.objects.get(id=primary_key)
-        return ChessBoardBean.matrix
