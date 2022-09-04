@@ -1,7 +1,5 @@
 from abc import ABC
 from typing import List
-from typing import Optional
-from typing import Union
 
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser
@@ -29,7 +27,7 @@ class ChessBoardViewSet(GenericViewSet, ABC):
         self._bo = ChessBoardBO
 
     @Receptor.request_handler
-    @action(methods=['get'], detail=False, url_path='(?P<pk>[^/.]+)')
+    @action(methods=['get'], detail=False, url_path='(?P<pk>[^/.]+/)')
     def retrieve_by_id(self, request: Request, pk: int) -> ChessBoardBean:
         return self._bo.get_by_id(pk)
 
