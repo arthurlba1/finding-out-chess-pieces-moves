@@ -1,10 +1,9 @@
-from typing import List
-
 from chess_pieces.models import ChessBoard
 
 
 class ChessBoardBean:
     """Chess board bean."""
+
     def __init__(
         self,
         columns: int,
@@ -34,11 +33,6 @@ class ChessBoardBean:
             primary_key=chess_board.id,
             rows=chess_board.rows
         )
-
-    @staticmethod
-    def from_models(chess_boards: List[ChessBoard]):
-        for chess_board in chess_boards:
-            return ChessBoardBean.from_model(chess_board)
 
     def to_dto(self) -> dict:
         return {
