@@ -16,16 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from rest_framework import routers
-
-from chess_pieces.rests import ChessBoardViewSet
-from chess_pieces.rests import ChessPieceViewSet
-
-router = routers.DefaultRouter()
-router.register('chess-pieces', ChessPieceViewSet)
-router.register('chess-board', ChessBoardViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include('chess_pieces.urls')),
     path('admin/', admin.site.urls),
 ]
