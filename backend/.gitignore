@@ -1,0 +1,8 @@
+# --------------  Files --------------
+*.pyc
+
+# Auth
+db.sqlite3
+
+# Virtualenv
+venv
