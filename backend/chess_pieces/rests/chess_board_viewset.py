@@ -1,37 +1,37 @@
-from abc import ABC
 from typing import List
 
-from rest_framework.decorators import action
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
 
-
-from chess_pieces.beans import ChessBoardBean
 from chess_pieces.bos import ChessBoardBO
-from chess_pieces.rests.base_viewset import GenericViewSet
-from chess_pieces.rests.base_viewset import Receptor
+from chess_pieces.constants.viewset_constants import ViewSetConstants
+from chess_pieces.models import ChessBoard
 from chess_pieces.serializers import ChessBoardSerializer
 
 
-class ChessBoardViewSet(GenericViewSet, ABC):
-    """Chess piece view set."""
+@api_view([ViewSetConstants.GET])
+def chess_board_request(request: Request):
+    if request.method == ViewSetConstants.GET:
+        chess_board_model = ChessBoardBO.get_all()
+        chess_board_serializer = ChessBoardSerializer(chess_board_model, many=True)
+        return JsonResponse(chess_board_serializer.data, safe=False)
 
-    url_basename = 'chess-board'
-    url_prefix = 'chess-board'
-    http_method_names = ['get', 'put']
-    parser_classes = (MultiPartParser, JSONParser)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._bo = ChessBoardBO
+@api_view([ViewSetConstants.PATCH])
+def chess_board_update(request: Request, pk: int):
+    try:
+        chess_board_model = ChessBoardBO.get_by_id(pk)
+    except ChessBoard.DoesNotExist:
+        return JsonResponse({'message': 'The chess piece does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-    @Receptor.request_handler
-    @action(methods=['get'], detail=False, url_path='(?P<pk>[^/.]+/)')
-    def retrieve_by_id(self, request: Request, pk: int) -> ChessBoardBean:
-        return self._bo.get_by_id(pk)
+    if request.method == ViewSetConstants.PATCH:
+        chess_board = JSONParser().parse(request)
+        chess_board_serializer = ChessBoardSerializer(chess_board_model, data=chess_board)
 
-    @Receptor.request_handler
-    @action(detail=False)
-    def all(self, request: Request) -> List[ChessBoardBean]:
-        return self._bo.get_all()
+        if chess_board_serializer.is_valid():
+            chess_board_serializer.save()
+            return JsonResponse(chess_board_serializer.data)
+        return JsonResponse(chess_board_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

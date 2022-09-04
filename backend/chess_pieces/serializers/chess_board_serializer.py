@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from chess_pieces.beans import ChessBoardBean
+from chess_pieces.models import ChessBoard
 
 
 class ChessBoardSerializer(serializers.ModelSerializer):
     """Serializes the chess board bean"""
 
     class Meta:
-        model = ChessBoardBean
-        fields = ['id', 'columns', 'rows']
+        model = ChessBoard
+        fields = ['columns', 'rows']

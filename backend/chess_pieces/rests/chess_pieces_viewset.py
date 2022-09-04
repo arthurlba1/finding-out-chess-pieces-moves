@@ -1,42 +1,44 @@
-from abc import ABC
-from typing import List
-
-from rest_framework.decorators import action
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
 
-from chess_pieces.beans import ChessPiecesBean
 from chess_pieces.bos import ChessPiecesBO
+from chess_pieces.constants.viewset_constants import ViewSetConstants
 from chess_pieces.models import ChessPiece
-from chess_pieces.rests.base_viewset import GenericViewSet
-from chess_pieces.rests.base_viewset import Receptor
 from chess_pieces.serializers import ChessPiecesSerializer
 
 
-class ChessPieceViewSet(GenericViewSet, ABC):
-    """Chess piece view set."""
+@api_view([ViewSetConstants.GET, ViewSetConstants.POST])
+def chess_pieces_request(request: Request):
+    if request.method == ViewSetConstants.GET:
+        chess_pieces_model = ChessPiecesBO.get_all()
+        chess_pieces_serializer = ChessPiecesSerializer(chess_pieces_model, many=True)
+        return JsonResponse(chess_pieces_serializer.data, safe=False)
+    elif request.method == ViewSetConstants.POST:
+        chess_piece_data = JSONParser().parse(request)
+        chess_pieces_serializer = ChessPiecesSerializer(data=chess_piece_data)
+        if chess_pieces_serializer.is_valid():
+            chess_pieces_serializer.save()
+            return JsonResponse(ChessPiecesBO.return_id(chess_pieces_serializer), status=status.HTTP_201_CREATED)
+        return JsonResponse(chess_pieces_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    url_basename = 'chess-pieces'
-    url_prefix = 'chess-pieces'
-    http_method_names = ['get', 'put']
-    parser_classes = (MultiPartParser, JSONParser)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._bo = ChessPiecesBO
+@api_view([ViewSetConstants.GET])
+def chess_piece_detail(request, pk):
+    try:
+        chess_pieces_model = ChessPiecesBO.get_by_id(pk)
+    except ChessPiece.DoesNotExist:
+        return JsonResponse({'message': 'The chess piece does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-    @Receptor.request_handler
-    @action(detail=False)
-    def all(self, request: Request) -> List[ChessPiecesBean]:
-        return self._bo.get_all()
+    if request.method == ViewSetConstants.GET:
+        chess_pieces_serializer = ChessPiecesSerializer(chess_pieces_model)
+        return JsonResponse(chess_pieces_serializer.data)
 
-    @Receptor.request_handler
-    @action(methods=['get'], detail=False, url_path='(?P<pk>[^/.]+)')
-    def retrieve_by_id(self, request: Request, pk: int) -> ChessPiecesBean:
-        return self._bo.get_by_id(pk)
 
-    @Receptor.request_handler
-    @action(methods=['get'], detail=False, url_path='(?P<name>[^/.]+)-(?P<color>[^/.]+)')
-    def filter_id(self, request: Request, name: str, color: str):
-        return self._bo.filter_id(name, color)
+@api_view([ViewSetConstants.POST])
+def chess_piece_retrieve_moves(request):
+    chess_piece_data = JSONParser().parse(request)
+    return JsonResponse(ChessPiecesBO.get_moves(chess_piece_data), status=status.HTTP_200_OK)
+
