@@ -4,8 +4,8 @@ from chess_pieces.models import ChessBoard
 
 
 class ChessBoardSerializer(serializers.ModelSerializer):
-    """Serializes the chess board bean"""
+    """Serializes the chess board"""
 
     class Meta:
         model = ChessBoard
-        fields = ['columns', 'rows']
+        fields = ['pk', 'columns', 'rows']
