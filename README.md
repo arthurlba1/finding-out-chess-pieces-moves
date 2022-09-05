@@ -38,7 +38,7 @@ Details on the architecture of the project.
 
 ## **How the Algorithm Works**
 
-###General
+### General
 
 Basically the algorithm starts by receiving a dictionary that contains the id of the chess piece and a cell from which
 it will start. 'get_moves' because it will catch all possible moves, making a query in the model for the piece with the  
