@@ -11,12 +11,9 @@ class ChessPiecesMovesHelpers:
         row_current_position = int(algebraic_notation[1])
 
         column_number = ord(column_current_position) - 96
-        print(column_number)
 
         for move in move_rules:
             moves.append([column_number + move[0], row_current_position + move[1]])
-
-        print(moves)
 
         moves = ChessPiecesMovesHelpers._valid_moves(moves)
         moves = map(ChessPiecesMovesHelpers._convert_to_algebraic, moves)
