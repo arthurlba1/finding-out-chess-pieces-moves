@@ -10,4 +10,4 @@ services:
     volumes:
       - ./backend:/app
     command: >
-      sh -c ". ./setup_development.sh"
+      sh -c "./backend/setup_development.sh"
