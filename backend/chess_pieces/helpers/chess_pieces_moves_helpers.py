@@ -1,5 +1,7 @@
 from typing import Tuple
 
+from chess_pieces.bos import ChessBoardBO
+
 
 class ChessPiecesMovesHelpers:
     """Chess pieces movement helper."""
@@ -25,10 +27,11 @@ class ChessPiecesMovesHelpers:
 
     @staticmethod
     def _valid_moves(moves: list):
+        chess_board = ChessBoardBO.get_board_size()
         valid = filter(
             lambda check_move:
-            1 <= check_move[0] <= 8
-            and 1 <= check_move[1] <= 8,
+            1 <= check_move[0] <= chess_board[0]
+            and 1 <= check_move[1] <= chess_board[1],
             moves
         )
         return list(valid)
