@@ -35,3 +35,15 @@ def chess_board_update(request: Request, pk: int):
             chess_board_serializer.save()
             return JsonResponse(chess_board_serializer.data)
         return JsonResponse(chess_board_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view([ViewSetConstants.GET])
+def chess_board_detail(request: Request, pk: int):
+    try:
+        chess_board_model = ChessBoardBO.get_by_id(pk)
+    except ChessBoard.DoesNotExist:
+        return JsonResponse({'message': 'The chess piece does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == ViewSetConstants.GET:
+        chess_pieces_serializer = ChessBoardSerializer(chess_board_model)
+        return JsonResponse(chess_pieces_serializer.data)

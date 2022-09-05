@@ -5,6 +5,7 @@ from typing import Union
 from django.core.exceptions import ObjectDoesNotExist
 
 from chess_pieces.constants import ChessPiecesDTOConstants
+from chess_pieces.constants.model_constants import ChessPieceConstants
 from chess_pieces.helpers import ChessPiecesMovesHelpers
 from chess_pieces.models import ChessPiece
 from chess_pieces.dao import ChessPiecesDAO
@@ -46,10 +47,12 @@ class ChessPiecesBO:
         chess_piece_name = ChessPiecesBO._filter_name_by_id(
             request_dictionary[ChessPiecesDTOConstants.PRIMARY_KEY_DTO_KEY]
         )
-        if chess_piece_name == 'Knight':
+
+        if chess_piece_name == ChessPieceConstants.KNIGHT:
             moves = ChessPiecesMovesHelpers.get_defined_moves_set(request_dictionary['cell'], KNIGHT_MOVEMENTS)
             for position in moves:
                 moves = moves + ChessPiecesMovesHelpers.get_defined_moves_set(position, KNIGHT_MOVEMENTS)
+
         moves_set = list(set(moves))
         moves_set.sort()
         response = {'moves': moves_set}
